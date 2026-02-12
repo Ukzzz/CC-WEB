@@ -108,12 +108,10 @@ const HospitalsListPage = () => {
   return (
     <div className="space-y-6">
       {/* Page Header */}
-      <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
-          <h1 className="text-3xl font-bold bg-gradient-to-r from-gray-900 via-gray-800 to-gray-700 bg-clip-text text-transparent">
-            Hospitals
-          </h1>
-          <p className="text-gray-500 mt-1">Manage and monitor all registered healthcare facilities</p>
+          <h1 className="page-title">Hospitals</h1>
+          <p className="page-subtitle">Manage and monitor all registered healthcare facilities</p>
         </div>
         <div className="flex flex-wrap gap-3">
           {/* View Toggle */}

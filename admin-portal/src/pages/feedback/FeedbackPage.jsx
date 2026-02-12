@@ -35,7 +35,7 @@ const FeedbackPage = () => {
 
   return (
     <div className="space-y-6">
-      <div className="flex justify-between items-center">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
            <h1 className="page-title">Patient Feedback</h1>
            <p className="page-subtitle">Reviews and ratings from users</p>

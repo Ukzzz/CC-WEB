@@ -37,14 +37,14 @@ const AdminsListPage = () => {
 
   return (
     <div className="space-y-6">
-      <div className="flex justify-between items-center">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">Admin Management</h1>
-          <p className="text-gray-500">Manage system and hospital administrators</p>
+          <h1 className="page-title">Admin Management</h1>
+          <p className="page-subtitle">Manage system and hospital administrators</p>
         </div>
         <button
           onClick={() => navigate('/admins/new')}
-          className="flex items-center space-x-2 bg-emerald-600 text-white px-4 py-2 rounded-lg hover:bg-emerald-700 transition"
+          className="btn btn-primary"
         >
           <Plus />
           <span>Add New Admin</span>
