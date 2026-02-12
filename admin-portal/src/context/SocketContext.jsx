@@ -15,10 +15,11 @@ export const SocketProvider = ({ children }) => {
   useEffect(() => {
     // Only connect if user is authenticated
     if (user && token) {
-        // Replace with your actual backend URL. 
-        // In development with Vite proxy, it might be just '/' or the full URL.
-        // Assuming backend is on port 5000 as per server.js logs
-        const newSocket = io('http://localhost:5000', {
+        // Use the origin of the API URL for the socket connection
+        const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:5000/api/v1';
+        const socketUrl = new URL(apiUrl).origin;
+
+        const newSocket = io(socketUrl, {
             auth: {
                 token: token
             }
