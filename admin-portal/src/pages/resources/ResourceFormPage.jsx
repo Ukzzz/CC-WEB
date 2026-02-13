@@ -4,6 +4,19 @@ import { useForm, Controller } from 'react-hook-form';
 import { resourceService } from '../../services/resource.service';
 import { hospitalService } from '../../services/hospital.service';
 import toast from 'react-hot-toast';
+import { 
+  Inventory, 
+  Category, 
+  MeetingRoom, 
+  LocalHospital, 
+  Save, 
+  Cancel,
+  Numbers 
+} from '@mui/icons-material';
+import PageHeader from '../../components/common/PageHeader';
+import FormCard from '../../components/common/FormCard';
+import FormInput from '../../components/common/FormInput';
+import FormSelect from '../../components/common/FormSelect';
 
 const ResourceFormPage = () => {
   const navigate = useNavigate();
@@ -94,144 +107,176 @@ const ResourceFormPage = () => {
   if (initialLoading) {
     return (
       <div className="flex items-center justify-center min-h-[50vh]">
-        <div className="animate-spin h-8 w-8 border-4 border-primary-600 border-t-transparent rounded-full" />
+        <svg className="animate-spin h-10 w-10 text-primary-600" fill="none" viewBox="0 0 24 24">
+          <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+          <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+        </svg>
       </div>
     );
   }
 
   return (
-    <div>
-      {/* Header */}
-      <div className="flex items-center gap-3 mb-6">
-        <button
-          onClick={() => navigate('/resources')}
-          className="p-2 hover:bg-gray-100 rounded-md text-gray-500"
-        >
-          <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-          </svg>
-        </button>
-        <h1 className="page-title">{isEdit ? 'Edit Resource' : 'Add Resource'}</h1>
-      </div>
+    <div className="max-w-7xl mx-auto">
+      <PageHeader
+        title={isEdit ? 'Edit Resource' : 'Add Resource'}
+        subtitle={isEdit ? 'Update resource availability and details' : 'Register a new resource'}
+        backUrl="/resources"
+      />
 
-      <form onSubmit={handleSubmit(onSubmit)}>
-        <div className="max-w-2xl space-y-6">
-          <div className="card">
-            <div className="card-body">
-              <h2 className="font-semibold text-gray-900 mb-4">Resource Details</h2>
-
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
-                <div>
-                  <label className="input-label">Hospital *</label>
+      <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          {/* Main Content */}
+          <div className="lg:col-span-2 space-y-6">
+            {/* Basic Info */}
+            <FormCard title="Resource Details" icon={Inventory}>
+              <div className="space-y-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <Controller
                     name="hospital"
                     control={control}
                     rules={{ required: 'Hospital is required' }}
                     render={({ field }) => (
-                      <select {...field} className={`input ${errors.hospital ? 'border-danger-500' : ''}`}>
+                      <FormSelect
+                        label="Hospital *"
+                        icon={LocalHospital}
+                        error={errors.hospital}
+                        {...field}
+                      >
                         <option value="">Select Hospital</option>
                         {hospitals.map((h) => (
                           <option key={h._id} value={h._id}>{h.name}</option>
                         ))}
-                      </select>
+                      </FormSelect>
                     )}
                   />
-                </div>
-                <div>
-                  <label className="input-label">Resource Type *</label>
+
                   <Controller
                     name="resourceType"
                     control={control}
                     render={({ field }) => (
-                      <select {...field} className="input">
+                      <FormSelect
+                        label="Resource Type *"
+                        icon={Category}
+                        {...field}
+                      >
                         <option value="bed">Bed</option>
                         <option value="icu_bed">ICU Bed</option>
                         <option value="ventilator">Ventilator</option>
                         <option value="emergency_ward">Emergency Ward</option>
                         <option value="ambulance">Ambulance</option>
                         <option value="oxygen_cylinder">Oxygen Cylinder</option>
-                      </select>
+                      </FormSelect>
                     )}
                   />
                 </div>
-              </div>
 
-              <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-4">
-                <div>
-                  <label className="input-label">Total *</label>
-                  <input
+                <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+                  <FormInput
+                    label="Total *"
                     type="number"
                     min="0"
-                    className={`input ${errors.total ? 'border-danger-500' : ''}`}
+                    icon={Numbers}
+                    error={errors.total}
                     {...register('total', { required: true, valueAsNumber: true })}
                   />
-                </div>
-                <div>
-                  <label className="input-label">Available *</label>
-                  <input
+
+                  <FormInput
+                    label="Available *"
                     type="number"
                     min="0"
-                    className={`input ${errors.available ? 'border-danger-500' : ''}`}
+                    icon={Numbers}
+                    error={errors.available}
                     {...register('available', { required: true, valueAsNumber: true })}
                   />
-                </div>
-                <div>
-                  <label className="input-label">Occupied</label>
-                  <input
+
+                  <FormInput
+                    label="Occupied"
                     type="number"
                     min="0"
-                    className="input"
+                    icon={Numbers}
                     {...register('occupied', { valueAsNumber: true })}
                   />
-                </div>
-                <div>
-                  <label className="input-label">Maintenance</label>
-                  <input
+
+                  <FormInput
+                    label="Maintenance"
                     type="number"
                     min="0"
-                    className="input"
+                    icon={Numbers}
                     {...register('maintenance', { valueAsNumber: true })}
                   />
                 </div>
               </div>
+            </FormCard>
 
-              <h3 className="font-medium text-gray-700 mb-3 mt-6">Location (Optional)</h3>
+            {/* Location Info */}
+            <FormCard title="Location Details" icon={MeetingRoom}>
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                <div>
-                  <label className="input-label">Floor</label>
-                  <input className="input" {...register('location.floor')} />
-                </div>
-                <div>
-                  <label className="input-label">Wing</label>
-                  <input className="input" {...register('location.wing')} />
-                </div>
-                <div>
-                  <label className="input-label">Ward</label>
-                  <input className="input" {...register('location.ward')} />
-                </div>
+                <FormInput
+                  label="Floor"
+                  placeholder="e.g. 2nd Floor"
+                  {...register('location.floor')}
+                />
+
+                <FormInput
+                  label="Wing"
+                  placeholder="e.g. North Wing"
+                  {...register('location.wing')}
+                />
+
+                <FormInput
+                  label="Ward"
+                  placeholder="e.g. Ward A"
+                  {...register('location.ward')}
+                />
               </div>
-            </div>
+            </FormCard>
           </div>
 
-          <button
-            type="submit"
-            disabled={loading}
-            className="btn btn-primary"
-          >
-            {loading ? (
-              <svg className="animate-spin h-5 w-5 text-white" fill="none" viewBox="0 0 24 24">
-                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-              </svg>
-            ) : (
-              <>
-                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                </svg>
-                {isEdit ? 'Update Resource' : 'Create Resource'}
-              </>
-            )}
-          </button>
+          {/* Sidebar Actions */}
+          <div className="space-y-6">
+            <FormCard title="Summary" className="bg-primary-50 border-primary-100">
+               <div className="text-sm text-gray-600">
+                 <p className="mb-2">Review your resource details before saving.</p>
+                 <ul className="list-disc list-inside space-y-1 text-xs">
+                   <li>Ensure total count matches available + occupied + maintenance</li>
+                   <li>Check location accuracy</li>
+                 </ul>
+               </div>
+            </FormCard>
+
+            <div className="flex flex-col gap-3">
+              <button
+                type="submit"
+                disabled={loading}
+                className="btn btn-primary w-full justify-center py-3 flex items-center gap-2 shadow-lg shadow-primary-500/20"
+              >
+                {loading ? (
+                  <>
+                    <svg className="animate-spin h-5 w-5 text-white" fill="none" viewBox="0 0 24 24">
+                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                    </svg>
+                    <span>Saving...</span>
+                  </>
+                ) : (
+                  <>
+                    <Save className="w-5 h-5" />
+                    <span>{isEdit ? 'Update Resource' : 'Create Resource'}</span>
+                  </>
+                )}
+              </button>
+              
+              <button
+                type="button"
+                onClick={() => navigate('/resources')}
+                className="btn btn-secondary w-full justify-center flex items-center gap-2"
+                disabled={loading}
+              >
+                <Cancel className="w-5 h-5" />
+                Cancel
+              </button>
+            </div>
+          </div>
         </div>
       </form>
     </div>

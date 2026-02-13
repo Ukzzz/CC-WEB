@@ -36,6 +36,12 @@ const hospitalSchema = new mongoose.Schema(
         type: String,
         required: [true, 'Zip code is required'],
         trim: true
+      },
+      country: {
+        type: String,
+        required: [true, 'Country is required'],
+        trim: true,
+        default: 'Pakistan'
       }
     },
     contact: {
@@ -101,6 +107,24 @@ const hospitalSchema = new mongoose.Schema(
         }
       }
     ],
+    services: {
+      is24x7: {
+        type: Boolean,
+        default: true
+      },
+      hasEmergency: {
+        type: Boolean,
+        default: true
+      },
+      hasAmbulance: {
+        type: Boolean,
+        default: false
+      },
+      hasBloodBank: {
+        type: Boolean,
+        default: false
+      }
+    },
     hospitalType: {
       type: String,
       enum: {

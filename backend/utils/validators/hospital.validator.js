@@ -36,7 +36,11 @@ const createHospitalSchema = Joi.object({
       .messages({ 'any.required': 'State is required' }),
     zipCode: Joi.string()
       .required()
-      .messages({ 'any.required': 'Zip code is required' })
+      .messages({ 'any.required': 'Zip code is required' }),
+    country: Joi.string()
+      .required()
+      .default('Pakistan')
+      .messages({ 'any.required': 'Country is required' })
   }).required(),
   contact: Joi.object({
     phone: Joi.string()
@@ -66,6 +70,12 @@ const createHospitalSchema = Joi.object({
       openTime: Joi.string().optional(),
       closeTime: Joi.string().optional()
     }).optional()
+  }).optional(),
+  services: Joi.object({
+    is24x7: Joi.boolean().default(true),
+    hasEmergency: Joi.boolean().default(true),
+    hasAmbulance: Joi.boolean().default(false),
+    hasBloodBank: Joi.boolean().default(false)
   }).optional(),
   departments: Joi.array()
     .items(
@@ -101,7 +111,8 @@ const updateHospitalSchema = Joi.object({
     address: Joi.string().optional(),
     city: Joi.string().optional(),
     state: Joi.string().optional(),
-    zipCode: Joi.string().optional()
+    zipCode: Joi.string().optional(),
+    country: Joi.string().optional()
   }).optional(),
   contact: Joi.object({
     phone: Joi.string().pattern(/^[\d\s\-+()]+$/).optional(),
@@ -119,6 +130,12 @@ const updateHospitalSchema = Joi.object({
       openTime: Joi.string().optional(),
       closeTime: Joi.string().optional()
     }).optional()
+  }).optional(),
+  services: Joi.object({
+    is24x7: Joi.boolean().optional(),
+    hasEmergency: Joi.boolean().optional(),
+    hasAmbulance: Joi.boolean().optional(),
+    hasBloodBank: Joi.boolean().optional()
   }).optional(),
   departments: Joi.array()
     .items(

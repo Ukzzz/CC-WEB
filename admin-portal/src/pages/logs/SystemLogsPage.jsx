@@ -16,8 +16,8 @@ const SystemLogsPage = () => {
     try {
       setLoading(true);
       const response = await logService.getLogs({ page, limit: 15 });
-      setLogs(response.data.logs);
-      setTotalPages(response.data.pagination.pages);
+      setLogs(response.data.logs || []);
+      setTotalPages(response.data.pagination?.pages || 1);
     } catch (error) {
       toast.error('Failed to load logs');
     } finally {

@@ -1,10 +1,23 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
-import { ArrowBack as ArrowLeft, Save, VerifiedUser as Shield, Business as Building } from '@mui/icons-material';
+import { 
+  VerifiedUser, 
+  Business, 
+  Person, 
+  Email, 
+  Lock, 
+  Save, 
+  Cancel,
+  AdminPanelSettings
+} from '@mui/icons-material';
 import { authService } from '../../services/auth.service';
 import { hospitalService } from '../../services/hospital.service';
 import toast from 'react-hot-toast';
+import PageHeader from '../../components/common/PageHeader';
+import FormCard from '../../components/common/FormCard';
+import FormInput from '../../components/common/FormInput';
+import FormSelect from '../../components/common/FormSelect';
 
 const AdminFormPage = () => {
   const navigate = useNavigate();
@@ -54,8 +67,6 @@ const AdminFormPage = () => {
   };
 
   // Generate email domain from hospital name
-  // e.g., "Jinnah Hospital" -> "jinnah.com.pk"
-  // e.g., "City General Hospital" -> "citygeneral.com.pk"
   const generateEmailDomain = (hospitalName) => {
     if (!hospitalName) return 'hospital.com.pk';
     
@@ -111,58 +122,45 @@ const AdminFormPage = () => {
   };
 
   return (
-    <div className="max-w-3xl mx-auto space-y-6">
-      <div className="flex items-center space-x-4">
-        <button
-          onClick={() => navigate('/admins')}
-          className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
-        >
-          <ArrowLeft />
-        </button>
-        <div>
-          <h1 className="text-2xl font-bold text-gray-900">Create New Admin</h1>
-          <p className="text-gray-500">Add a new system or hospital administrator</p>
-        </div>
-      </div>
+    <div className="max-w-7xl mx-auto">
+      <PageHeader
+        title="Create New Admin"
+        subtitle="Add a new system or hospital administrator"
+        backUrl="/admins"
+      />
 
-      <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
-        <form onSubmit={handleSubmit(onSubmit)} className="p-6 space-y-6">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            {/* Name Fields */}
-            <div className="space-y-2">
-              <label className="block text-sm font-medium text-gray-700">First Name</label>
-              <input
-                {...register('firstName', { required: 'First name is required' })}
-                type="text"
-                className="w-full px-4 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 outline-none transition-all"
-                placeholder="John"
-              />
-              {errors.firstName && (
-                <span className="text-sm text-red-500">{errors.firstName.message}</span>
-              )}
-            </div>
-            <div className="space-y-2">
-              <label className="block text-sm font-medium text-gray-700">Last Name</label>
-              <input
-                {...register('lastName', { required: 'Last name is required' })}
-                type="text"
-                className="w-full px-4 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 outline-none transition-all"
-                placeholder="Doe"
-              />
-              {errors.lastName && (
-                <span className="text-sm text-red-500">{errors.lastName.message}</span>
-              )}
-            </div>
+      <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          {/* Left Column: Personal Info & Role */}
+          <div className="space-y-6">
+            <FormCard title="Administrator Details" icon={Person}>
+              <div className="space-y-4">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <FormInput
+                    label="First Name *"
+                    placeholder="John"
+                    icon={Person}
+                    error={errors.firstName}
+                    {...register('firstName', { required: 'First name is required' })}
+                  />
 
-            {/* Role Selection */}
-            <div className="md:col-span-2 space-y-2">
-              <label className="block text-sm font-medium text-gray-700">Role</label>
+                  <FormInput
+                    label="Last Name *"
+                    placeholder="Doe"
+                    error={errors.lastName}
+                    {...register('lastName', { required: 'Last name is required' })}
+                  />
+                </div>
+              </div>
+            </FormCard>
+
+            <FormCard title="Role Assignment" icon={AdminPanelSettings}>
               <div className="grid grid-cols-2 gap-4">
                 <label className={`
-                  relative flex flex-col items-center justify-center p-4 border-2 rounded-xl cursor-pointer transition-all
+                  relative flex flex-col items-center justify-center p-6 border rounded-xl cursor-pointer transition-all duration-200
                   ${selectedRole === 'hospital_admin' 
-                    ? 'border-emerald-500 bg-emerald-50' 
-                    : 'border-gray-100 hover:border-emerald-200 hover:bg-gray-50'}
+                    ? 'border-emerald-500 bg-emerald-50 ring-1 ring-emerald-500' 
+                    : 'border-gray-200 hover:border-emerald-200 hover:bg-gray-50'}
                 `}>
                   <input
                     type="radio"
@@ -170,17 +168,20 @@ const AdminFormPage = () => {
                     {...register('role')}
                     className="sr-only"
                   />
-                  <Building className={selectedRole === 'hospital_admin' ? 'text-emerald-600' : 'text-gray-400'} />
-                  <span className={`mt-2 font-medium ${selectedRole === 'hospital_admin' ? 'text-emerald-900' : 'text-gray-600'}`}>
+                  <div className={`p-3 rounded-full mb-3 ${selectedRole === 'hospital_admin' ? 'bg-emerald-100 text-emerald-600' : 'bg-gray-100 text-gray-500'}`}>
+                    <Business className="w-6 h-6" />
+                  </div>
+                  <span className={`font-semibold ${selectedRole === 'hospital_admin' ? 'text-emerald-900' : 'text-gray-700'}`}>
                     Hospital Admin
                   </span>
+                  <span className="text-xs text-gray-500 mt-1 text-center">Manages single hospital</span>
                 </label>
 
                 <label className={`
-                  relative flex flex-col items-center justify-center p-4 border-2 rounded-xl cursor-pointer transition-all
+                  relative flex flex-col items-center justify-center p-6 border rounded-xl cursor-pointer transition-all duration-200
                   ${selectedRole === 'super_admin' 
-                    ? 'border-purple-500 bg-purple-50' 
-                    : 'border-gray-100 hover:border-purple-200 hover:bg-gray-50'}
+                    ? 'border-purple-500 bg-purple-50 ring-1 ring-purple-500' 
+                    : 'border-gray-200 hover:border-purple-200 hover:bg-gray-50'}
                 `}>
                   <input
                     type="radio"
@@ -188,91 +189,120 @@ const AdminFormPage = () => {
                     {...register('role')}
                     className="sr-only"
                   />
-                  <Shield className={selectedRole === 'super_admin' ? 'text-purple-600' : 'text-gray-400'} />
-                  <span className={`mt-2 font-medium ${selectedRole === 'super_admin' ? 'text-purple-900' : 'text-gray-600'}`}>
+                  <div className={`p-3 rounded-full mb-3 ${selectedRole === 'super_admin' ? 'bg-purple-100 text-purple-600' : 'bg-gray-100 text-gray-500'}`}>
+                    <VerifiedUser className="w-6 h-6" />
+                  </div>
+                  <span className={`font-semibold ${selectedRole === 'super_admin' ? 'text-purple-900' : 'text-gray-700'}`}>
                     Super Admin
                   </span>
+                  <span className="text-xs text-gray-500 mt-1 text-center">Full system access</span>
                 </label>
               </div>
-            </div>
+            </FormCard>
+          </div>
 
-            {/* Hospital Selection (Conditional) */}
-            {selectedRole === 'hospital_admin' && (
-              <div className="md:col-span-2 space-y-2 animate-fadeIn">
-                <label className="block text-sm font-medium text-gray-700">Assign Hospital</label>
-                <select
-                  {...register('hospital', { required: 'Hospital is required for Hospital Admins' })}
-                  className="w-full px-4 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 outline-none transition-all"
-                >
-                  <option value="">Select a hospital...</option>
-                  {hospitals.map((hospital) => (
-                    <option key={hospital._id} value={hospital._id}>
-                      {hospital.name} ({hospital.code})
-                    </option>
-                  ))}
-                </select>
-                {errors.hospital && (
-                  <span className="text-sm text-red-500">{errors.hospital.message}</span>
+          {/* Right Column: Account Settings */}
+          <div className="space-y-6">
+            <FormCard title="Account Settings" icon={Email}>
+              <div className="space-y-4">
+                {/* Hospital Selection (Conditional) */}
+                {selectedRole === 'hospital_admin' && (
+                  <div className="animate-fadeIn">
+                    <FormSelect
+                      label="Assign Hospital *"
+                      icon={Business}
+                      error={errors.hospital}
+                      {...register('hospital', { required: 'Hospital is required for Hospital Admins' })}
+                    >
+                      <option value="">Select a hospital...</option>
+                      {hospitals.map((hospital) => (
+                        <option key={hospital._id} value={hospital._id}>
+                          {hospital.name} ({hospital.code})
+                        </option>
+                      ))}
+                    </FormSelect>
+                    
+                    {selectedHospital && (
+                      <div className="mt-2 p-3 bg-emerald-50 rounded-lg flex items-start gap-2 text-sm text-emerald-700">
+                        <VerifiedUser className="w-4 h-4 mt-0.5 shrink-0" />
+                        <div>
+                          <p className="font-medium">Domain Verified</p>
+                          <p className="text-emerald-600/80 text-xs">Email domain will be set to: @{getSelectedHospitalDomain()}</p>
+                        </div>
+                      </div>
+                    )}
+                  </div>
                 )}
-                {selectedHospital && (
-                  <p className="text-xs text-emerald-600 flex items-center gap-1">
-                    <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
-                      <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clipRule="evenodd" />
-                    </svg>
-                    Email domain will be: @{getSelectedHospitalDomain()}
-                  </p>
-                )}
+
+                <div className="space-y-4 pt-2">
+                  <div className="relative">
+                    <FormInput
+                      label="Email Address *"
+                      type="email"
+                      placeholder={selectedRole === 'hospital_admin' ? 'Select hospital & enter first name' : 'admin@example.com'}
+                      icon={Email}
+                      error={errors.email}
+                      readOnly={selectedRole === 'hospital_admin' && !!selectedHospital && !!firstName}
+                      {...register('email', { required: 'Email is required' })}
+                    />
+                    {selectedRole === 'hospital_admin' && selectedHospital && firstName && (
+                      <span className="absolute right-3 top-9 text-xs font-medium text-emerald-600 bg-emerald-50 px-2 py-1 rounded">
+                        Auto-generated
+                      </span>
+                    )}
+                  </div>
+
+                  <FormInput
+                    label="Password *"
+                    type="password"
+                    placeholder="••••••••"
+                    icon={Lock}
+                    error={errors.password}
+                    {...register('password', { 
+                      required: 'Password is required',
+                      minLength: { value: 8, message: 'Password must be at least 8 characters' } 
+                    })}
+                  />
+                </div>
               </div>
-            )}
+            </FormCard>
 
-            {/* Email & Password */}
-            <div className="space-y-2">
-              <label className="block text-sm font-medium text-gray-700">
-                Email Address
-                {selectedRole === 'hospital_admin' && selectedHospital && (
-                  <span className="text-xs text-gray-400 ml-2">(auto-generated)</span>
+            {/* Actions */}
+            <div className="flex flex-col gap-3">
+              <button
+                type="submit"
+                disabled={isSubmitting}
+                className="btn btn-primary w-full justify-center py-3 flex items-center gap-2 shadow-lg shadow-primary-500/20"
+              >
+                {isSubmitting ? (
+                  <>
+                    <svg className="animate-spin h-5 w-5 text-white" fill="none" viewBox="0 0 24 24">
+                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                    </svg>
+                    <span>Creating Administrator...</span>
+                  </>
+                ) : (
+                  <>
+                    <Save className="w-5 h-5" />
+                    <span>Create Administrator</span>
+                  </>
                 )}
-              </label>
-              <input
-                {...register('email', { required: 'Email is required' })}
-                type="email"
-                className="w-full px-4 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 outline-none transition-all"
-                placeholder={selectedRole === 'hospital_admin' ? 'Select hospital & enter first name' : 'admin@example.com'}
-                readOnly={selectedRole === 'hospital_admin' && !!selectedHospital && !!firstName}
-              />
-              {errors.email && (
-                <span className="text-sm text-red-500">{errors.email.message}</span>
-              )}
-            </div>
-            <div className="space-y-2">
-              <label className="block text-sm font-medium text-gray-700">Password</label>
-              <input
-                {...register('password', { 
-                  required: 'Password is required',
-                  minLength: { value: 8, message: 'Password must be at least 8 characters' } 
-                })}
-                type="password"
-                className="w-full px-4 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 outline-none transition-all"
-                placeholder="••••••••"
-              />
-              {errors.password && (
-                <span className="text-sm text-red-500">{errors.password.message}</span>
-              )}
+              </button>
+              
+              <button
+                type="button"
+                onClick={() => navigate('/admins')}
+                className="btn btn-secondary w-full justify-center flex items-center gap-2"
+                disabled={isSubmitting}
+              >
+                <Cancel className="w-5 h-5" />
+                Cancel
+              </button>
             </div>
           </div>
-
-          <div className="pt-4 flex justify-end">
-            <button
-              type="submit"
-              disabled={isSubmitting}
-              className="flex items-center space-x-2 bg-emerald-600 text-white px-6 py-2 rounded-lg hover:bg-emerald-700 transition disabled:opacity-50 disabled:cursor-not-allowed"
-            >
-              <Save />
-              <span>{isSubmitting ? 'Creating...' : 'Create Admin'}</span>
-            </button>
-          </div>
-        </form>
-      </div>
+        </div>
+      </form>
     </div>
   );
 };

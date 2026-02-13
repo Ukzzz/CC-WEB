@@ -2,7 +2,18 @@ import { useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
 import { useAuth } from '../../context/AuthContext';
+import { motion } from 'framer-motion';
 import toast from 'react-hot-toast';
+import { 
+  EmailOutlined, 
+  LockOutlined, 
+  VisibilityOutlined, 
+  VisibilityOffOutlined,
+  LocalHospital,
+  MedicalServices,
+  HealthAndSafety
+} from '@mui/icons-material';
+import LoginInput from '../../components/common/LoginInput';
 
 const LoginPage = () => {
   const navigate = useNavigate();
@@ -36,11 +47,11 @@ const LoginPage = () => {
 
     try {
       await login(data.email, data.password);
-      toast.success('Login successful');
+      toast.success('Welcome back!');
       const from = location.state?.from?.pathname || '/dashboard';
       navigate(from, { replace: true });
     } catch (err) {
-      const message = err.response?.data?.message || 'Login failed. Please try again.';
+      const message = err.response?.data?.message || 'Invalid credentials. Please try again.';
       setError(message);
     } finally {
       setLoading(false);
@@ -48,156 +59,165 @@ const LoginPage = () => {
   };
 
   return (
-    <div className="min-h-screen flex">
-      {/* Left Side - Branding */}
-      <div className="hidden lg:flex lg:w-1/2 bg-gradient-to-br from-[#1e3a5f] to-[#0d2137] relative overflow-hidden">
-        {/* Subtle pattern overlay */}
-        <div 
-          className="absolute inset-0 opacity-5"
-          style={{
-            backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='1'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")`,
-          }}
-        />
+    <div className="min-h-screen flex bg-gray-50">
+      {/* Left Side - Premium Medical Branding */}
+      <div className="hidden lg:flex lg:w-1/2 relative overflow-hidden bg-[#0F172A]">
+        {/* Background Gradient */}
+        <div className="absolute inset-0 bg-gradient-to-br from-emerald-900/40 via-[#0F172A] to-[#0F172A] z-0" />
         
-        <div className="relative z-10 flex flex-col justify-center items-center w-full p-12 text-center">
-          {/* Tagline */}
-          <h2 className="text-3xl font-light text-white mb-4">
-            CareConnect
-          </h2>
-          <p className="text-white/70 text-lg max-w-md leading-relaxed">
-            Streamline your hospital operations with our comprehensive admin portal. 
-            Manage resources, staff, and patients efficiently.
-          </p>
-          
-          {/* Features */}
-          <div className="mt-12 grid grid-cols-3 gap-8 text-center">
-            <div>
-              <div className="w-12 h-12 mx-auto mb-3 rounded-full bg-white/10 flex items-center justify-center">
-                <svg className="w-6 h-6 text-white/80" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
-                </svg>
-              </div>
-              <p className="text-white/60 text-sm">Multi-Hospital</p>
-            </div>
-            <div>
-              <div className="w-12 h-12 mx-auto mb-3 rounded-full bg-white/10 flex items-center justify-center">
-                <svg className="w-6 h-6 text-white/80" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z" />
-                </svg>
-              </div>
-              <p className="text-white/60 text-sm">Staff Management</p>
-            </div>
-            <div>
-              <div className="w-12 h-12 mx-auto mb-3 rounded-full bg-white/10 flex items-center justify-center">
-                <svg className="w-6 h-6 text-white/80" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
-                </svg>
-              </div>
-              <p className="text-white/60 text-sm">Real-time Analytics</p>
-            </div>
-          </div>
+        {/* Abstract Medical Shapes */}
+        <div className="absolute top-0 right-0 w-full h-full overflow-hidden opacity-20 pointer-events-none">
+           <svg viewBox="0 0 1000 1000" xmlns="http://www.w3.org/2000/svg" className="absolute w-[150%] h-[150%] -top-[20%] -right-[20%] animate-pulse-slow">
+             <defs>
+               <linearGradient id="grad1" x1="0%" y1="0%" x2="100%" y2="100%">
+                 <stop offset="0%" style={{stopColor: '#10B981', stopOpacity: 0.2}} />
+                 <stop offset="100%" style={{stopColor: '#3B82F6', stopOpacity: 0.2}} />
+               </linearGradient>
+             </defs>
+             <circle cx="500" cy="500" r="400" fill="url(#grad1)" />
+             <path d="M500,100 L900,500 L500,900 L100,500 Z" fill="none" stroke="url(#grad1)" strokeWidth="2" />
+           </svg>
+        </div>
+
+        <div className="relative z-10 flex flex-col justify-center items-center w-full p-16 text-center h-full glass-effect-premium">
+           <motion.div 
+             initial={{ opacity: 0, y: 20 }}
+             animate={{ opacity: 1, y: 0 }}
+             transition={{ duration: 0.8 }}
+             className="mb-8 p-4 bg-white/5 rounded-full backdrop-blur-sm border border-white/10"
+           >
+             <LocalHospital className="w-16 h-16 text-emerald-400" />
+           </motion.div>
+           
+           <motion.h1 
+             initial={{ opacity: 0, y: 20 }}
+             animate={{ opacity: 1, y: 0 }}
+             transition={{ duration: 0.8, delay: 0.2 }}
+             className="text-4xl font-bold text-white mb-6 tracking-tight"
+           >
+             CareConnect
+           </motion.h1>
+           
+           <motion.p 
+             initial={{ opacity: 0, y: 20 }}
+             animate={{ opacity: 1, y: 0 }}
+             transition={{ duration: 0.8, delay: 0.4 }}
+             className="text-lg text-gray-300 max-w-md leading-relaxed font-light"
+           >
+             Next-generation hospital administration platform. 
+             Seamlessly manage staff, resources, and patient data with precision and care.
+           </motion.p>
+           
+           <motion.div 
+             initial={{ opacity: 0 }}
+             animate={{ opacity: 1 }}
+             transition={{ duration: 1, delay: 0.8 }}
+             className="mt-12 flex gap-8"
+           >
+             <div className="flex flex-col items-center gap-2">
+               <div className="w-10 h-10 rounded-full bg-emerald-500/10 flex items-center justify-center text-emerald-400 border border-emerald-500/20">
+                 <MedicalServices fontSize="small" />
+               </div>
+               <span className="text-xs text-gray-400 font-medium">Clinical</span>
+             </div>
+             <div className="flex flex-col items-center gap-2">
+               <div className="w-10 h-10 rounded-full bg-blue-500/10 flex items-center justify-center text-blue-400 border border-blue-500/20">
+                 <HealthAndSafety fontSize="small" />
+               </div>
+               <span className="text-xs text-gray-400 font-medium">Safety</span>
+             </div>
+           </motion.div>
         </div>
       </div>
 
       {/* Right Side - Login Form */}
-      <div className="w-full lg:w-1/2 flex items-center justify-center p-8 bg-gray-50">
-        <div className="w-full max-w-md">
-          {/* Mobile Logo */}
-          <div className="lg:hidden text-center mb-8">
-            <h2 className="text-2xl font-bold text-[#1e3a5f]">CareConnect</h2>
-          </div>
+      <div className="w-full lg:w-1/2 flex items-center justify-center p-8 bg-white/50 relative">
+        {/* Mobile Background Blob used only when on small screens for visual interest */}
+        <div className="absolute inset-0 overflow-hidden lg:hidden pointer-events-none">
+           <div className="absolute -top-[20%] -right-[20%] w-[80%] h-[80%] bg-emerald-100/40 rounded-full blur-3xl opacity-50" />
+           <div className="absolute -bottom-[20%] -left-[20%] w-[80%] h-[80%] bg-blue-100/40 rounded-full blur-3xl opacity-50" />
+        </div>
 
+        <motion.div 
+          initial={{ opacity: 0, scale: 0.95 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ duration: 0.5 }}
+          className="w-full max-w-[420px] bg-white p-8 sm:p-10 rounded-2xl shadow-xl shadow-gray-200/50 relative z-10 border border-gray-100"
+        >
           {/* Header */}
-          <div className="mb-8">
-            <h1 className="text-2xl font-semibold text-gray-900 mb-2">
-              Welcome back
-            </h1>
-            <p className="text-gray-500">
-              Sign in to your admin account to continue
-            </p>
+          <div className="mb-10 text-center">
+            <div className="lg:hidden mx-auto w-12 h-12 bg-emerald-50 rounded-xl flex items-center justify-center text-emerald-600 mb-4">
+              <LocalHospital />
+            </div>
+            <h2 className="text-2xl font-bold text-gray-900 mb-2">Welcome Back</h2>
+            <p className="text-gray-500 text-sm">Please sign in to access your dashboard</p>
           </div>
 
           {/* Error Alert */}
           {error && (
-            <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-lg">
-              <div className="flex items-center gap-3">
-                <div className="w-5 h-5 rounded-full bg-red-100 flex items-center justify-center flex-shrink-0">
-                  <svg className="w-3 h-3 text-red-600" fill="currentColor" viewBox="0 0 20 20">
-                    <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
-                  </svg>
-                </div>
-                <p className="text-sm text-red-700">{error}</p>
+            <motion.div 
+              initial={{ height: 0, opacity: 0 }}
+              animate={{ height: 'auto', opacity: 1 }}
+              className="mb-6 p-4 bg-red-50 border border-red-100 rounded-lg flex items-start gap-3"
+            >
+              <div className="text-red-500 mt-0.5">
+                <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                  <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
+                </svg>
               </div>
-            </div>
+              <p className="text-sm text-red-600 font-medium">{error}</p>
+            </motion.div>
           )}
 
           {/* Form */}
-          <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
-            {/* Email Field */}
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1.5">
-                Email Address
+          <form onSubmit={handleSubmit(onSubmit)}>
+            <LoginInput
+              label="Email Address"
+              type="email"
+              icon={EmailOutlined}
+              error={errors.email}
+              {...register('email', {
+                required: 'Email is required',
+                pattern: {
+                  value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
+                  message: 'Invalid email address',
+                },
+              })}
+            />
+
+            <LoginInput
+              label="Password"
+              type={showPassword ? 'text' : 'password'}
+              icon={LockOutlined}
+              endIcon={showPassword ? VisibilityOffOutlined : VisibilityOutlined}
+              onEndIconClick={() => setShowPassword(!showPassword)}
+              error={errors.password}
+              {...register('password', {
+                required: 'Password is required',
+              })}
+            />
+
+            <div className="flex items-center justify-between mb-8 mt-2">
+              <label className="flex items-center gap-2 cursor-pointer group">
+                <div className="relative flex items-center">
+                  <input type="checkbox" className="peer sr-only" />
+                  <div className="w-4 h-4 border-2 border-gray-300 rounded transition-colors peer-checked:bg-emerald-500 peer-checked:border-emerald-500 group-hover:border-emerald-400" />
+                  <svg className="w-3 h-3 text-white absolute left-0.5 opacity-0 peer-checked:opacity-100 transition-opacity pointer-events-none" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="3">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+                  </svg>
+                </div>
+                <span className="text-sm text-gray-500 font-medium group-hover:text-gray-700 transition-colors">Remember me</span>
               </label>
-              <input
-                type="email"
-                className={`w-full px-4 py-3 bg-white border ${errors.email ? 'border-red-300 focus:border-red-500 focus:ring-red-500/20' : 'border-gray-300 focus:border-[#1e3a5f] focus:ring-[#1e3a5f]/20'} rounded-lg transition-all duration-200 focus:outline-none focus:ring-4 text-gray-900 placeholder-gray-400`}
-                placeholder="you@example.com"
-                {...register('email', {
-                  required: 'Email is required',
-                  pattern: {
-                    value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
-                    message: 'Invalid email address',
-                  },
-                })}
-                disabled={loading}
-              />
-              {errors.email && (
-                <p className="text-xs text-red-600 mt-1.5">{errors.email.message}</p>
-              )}
+              
+              <a href="#" className="text-sm font-semibold text-emerald-600 hover:text-emerald-700 transition-colors">
+                Forgot password?
+              </a>
             </div>
 
-            {/* Password Field */}
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1.5">
-                Password
-              </label>
-              <div className="relative">
-                <input
-                  type={showPassword ? 'text' : 'password'}
-                  className={`w-full px-4 py-3 bg-white border ${errors.password ? 'border-red-300 focus:border-red-500 focus:ring-red-500/20' : 'border-gray-300 focus:border-[#1e3a5f] focus:ring-[#1e3a5f]/20'} rounded-lg transition-all duration-200 focus:outline-none focus:ring-4 text-gray-900 placeholder-gray-400 pr-12`}
-                  placeholder="••••••••"
-                  {...register('password', {
-                    required: 'Password is required',
-                  })}
-                  disabled={loading}
-                />
-                <button
-                  type="button"
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors p-1"
-                  onClick={() => setShowPassword(!showPassword)}
-                >
-                  {showPassword ? (
-                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.543 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21" />
-                    </svg>
-                  ) : (
-                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
-                    </svg>
-                  )}
-                </button>
-              </div>
-              {errors.password && (
-                <p className="text-xs text-red-600 mt-1.5">{errors.password.message}</p>
-              )}
-            </div>
-
-            {/* Submit Button */}
             <button
               type="submit"
               disabled={loading}
-              className="w-full py-3 px-4 bg-[#1e3a5f] hover:bg-[#162d4a] text-white font-medium rounded-lg transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+              className="w-full py-4 bg-emerald-600 hover:bg-emerald-700 text-white font-semibold rounded-xl transition-all duration-300 transform hover:-translate-y-0.5 hover:shadow-lg hover:shadow-emerald-500/30 disabled:opacity-70 disabled:cursor-not-allowed disabled:transform-none disabled:shadow-none flex items-center justify-center gap-2"
             >
               {loading ? (
                 <>
@@ -205,19 +225,21 @@ const LoginPage = () => {
                     <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
                     <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                   </svg>
-                  <span>Signing in...</span>
+                  <span>Signing In...</span>
                 </>
               ) : (
-                <span>Sign in</span>
+                <span>Sign In</span>
               )}
             </button>
           </form>
 
           {/* Footer */}
-          <p className="text-center text-gray-400 text-xs mt-8">
-            © 2026 CareConnect. All rights reserved.
-          </p>
-        </div>
+          <div className="mt-8 text-center">
+             <p className="text-xs text-gray-400">
+               Protected by enterprise-grade security.
+             </p>
+          </div>
+        </motion.div>
       </div>
     </div>
   );

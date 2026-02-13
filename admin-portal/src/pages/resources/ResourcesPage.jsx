@@ -149,7 +149,7 @@ const ResourcesPage = () => {
           <h1 className="page-title">Resources</h1>
           <p className="page-subtitle">Monitor and manage hospital resources in real-time</p>
         </div>
-        <div className="flex flex-wrap gap-3">
+        <div className="flex flex-wrap items-center gap-3">
           {/* View Toggle */}
           <div className="flex bg-white rounded-xl border border-gray-200 p-1 shadow-sm">
             <button
@@ -183,29 +183,31 @@ const ResourcesPage = () => {
           {viewMode === 'grouped' && (
             <div className="flex gap-1 bg-white rounded-xl border border-gray-200 p-1 shadow-sm">
               <button onClick={expandAll} className="px-3 py-1.5 text-sm text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-lg transition-colors">
-                Expand All
+                Expand
               </button>
               <button onClick={collapseAll} className="px-3 py-1.5 text-sm text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-lg transition-colors">
-                Collapse All
+                Collapse
               </button>
             </div>
           )}
 
-          <button onClick={fetchResources} className="btn btn-secondary" disabled={loading}>
-            <svg className={`w-4 h-4 ${loading ? 'animate-spin' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
-            </svg>
-            Refresh
-          </button>
-          
-          {hasPermission('manage_resources') && (
-            <button onClick={() => navigate('/resources/new')} className="btn btn-primary">
-              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+          <div className="flex items-center gap-3 ml-auto sm:ml-0">
+             <button onClick={fetchResources} className="btn btn-secondary whitespace-nowrap" disabled={loading}>
+              <svg className={`w-4 h-4 ${loading ? 'animate-spin' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
               </svg>
-              Add Resource
+              Refresh
             </button>
-          )}
+            
+            {hasPermission('manage_resources') && (
+              <button onClick={() => navigate('/resources/new')} className="btn btn-primary whitespace-nowrap">
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+                </svg>
+                Add Resource
+              </button>
+            )}
+          </div>
         </div>
       </div>
 

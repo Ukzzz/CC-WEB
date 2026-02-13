@@ -3,6 +3,18 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
 import { hospitalService } from '../../services/hospital.service';
 import toast from 'react-hot-toast';
+import { 
+  Business, 
+  LocationOn, 
+  Phone, 
+  MedicalServices, 
+  Save, 
+  Cancel 
+} from '@mui/icons-material';
+import PageHeader from '../../components/common/PageHeader';
+import FormCard from '../../components/common/FormCard';
+import FormInput from '../../components/common/FormInput';
+import FormSelect from '../../components/common/FormSelect';
 
 const HospitalFormPage = () => {
   const navigate = useNavigate();
@@ -28,7 +40,7 @@ const HospitalFormPage = () => {
       city: '',
       state: '',
       zipCode: '',
-      country: 'India',
+      country: 'Pakistan',
       phone: '',
       email: '',
       website: '',
@@ -39,8 +51,7 @@ const HospitalFormPage = () => {
     },
   });
 
-  const watchType = watch('type');
-  const watchStatus = watch('status');
+
 
   useEffect(() => {
     if (isEditing) {
@@ -63,7 +74,7 @@ const HospitalFormPage = () => {
         city: hospital.location?.city || '',
         state: hospital.location?.state || '',
         zipCode: hospital.location?.zipCode || '',
-        country: hospital.location?.country || 'India',
+        country: hospital.location?.country || 'Pakistan',
         phone: hospital.contact?.phone || '',
         email: hospital.contact?.email || '',
         website: hospital.contact?.website || '',
@@ -93,8 +104,8 @@ const HospitalFormPage = () => {
         city: data.city,
         state: data.state,
         zipCode: data.zipCode,
+        country: data.country,
       },
-      country: data.country,
       contact: {
         phone: data.phone,
         email: data.email,
@@ -140,163 +151,73 @@ const HospitalFormPage = () => {
   }
 
   return (
-    <div className="max-w-4xl mx-auto">
-      {/* Page Header */}
-      <div className="mb-6">
-        <button
-          onClick={() => navigate('/hospitals')}
-          className="text-gray-500 hover:text-gray-700 text-sm flex items-center gap-1 mb-2"
-        >
-          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-          </svg>
-          Back to Hospitals
-        </button>
-        <h1 className="page-title">{isEditing ? 'Edit Hospital' : 'Add New Hospital'}</h1>
-        <p className="page-subtitle">
-          {isEditing ? 'Update hospital information' : 'Register a new hospital in the system'}
-        </p>
-      </div>
+    <div className="max-w-7xl mx-auto">
+      <PageHeader 
+        title={isEditing ? 'Edit Hospital' : 'Add New Hospital'}
+        subtitle={isEditing ? 'Update hospital information' : 'Register a new hospital in the system'}
+        backUrl="/hospitals"
+      />
 
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
-        {/* Basic Information */}
-        <div className="card">
-          <div className="card-body">
-            <h2 className="text-lg font-semibold text-gray-900 mb-4">Basic Information</h2>
-            
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div>
-                <label className="input-label">Hospital Name *</label>
-                <input
-                  type="text"
-                  className={`input ${errors.name ? 'input-error' : ''}`}
-                  placeholder="Enter hospital name"
-                  {...register('name', { required: 'Hospital name is required' })}
-                />
-                {errors.name && <p className="text-danger-600 text-xs mt-1">{errors.name.message}</p>}
-              </div>
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          {/* Basic Information */}
+          <FormCard title="Basic Information" icon={Business}>
+            <div className="space-y-4">
+              <FormInput
+                label="Hospital Name *"
+                placeholder="Enter hospital name"
+                icon={Business}
+                error={errors.name}
+                {...register('name', { required: 'Hospital name is required' })}
+              />
 
-              <div>
-                <label className="input-label">Hospital Code *</label>
-                <input
-                  type="text"
-                  className={`input ${errors.code ? 'input-error' : ''}`}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <FormInput
+                  label="Hospital Code *"
                   placeholder="e.g., HOSP001"
+                  error={errors.code}
                   {...register('code', { required: 'Hospital code is required' })}
                 />
-                {errors.code && <p className="text-danger-600 text-xs mt-1">{errors.code.message}</p>}
-              </div>
-
-              <div>
-                <label className="input-label">Hospital Type *</label>
-                <select
-                  className={`input ${errors.type ? 'input-error' : ''}`}
+                
+                <FormSelect
+                  label="Hospital Type *"
+                  error={errors.type}
                   {...register('type', { required: 'Type is required' })}
                 >
                   <option value="private">Private</option>
                   <option value="public">Public</option>
-                </select>
+                </FormSelect>
               </div>
 
-              <div>
-                <label className="input-label">Status *</label>
-                <select
-                  className={`input ${errors.status ? 'input-error' : ''}`}
-                  {...register('status', { required: 'Status is required' })}
-                >
-                  <option value="active">Active</option>
-                  <option value="inactive">Inactive</option>
-                </select>
-              </div>
+              <FormSelect
+                label="Status *"
+                error={errors.status}
+                {...register('status', { required: 'Status is required' })}
+              >
+                <option value="active">Active</option>
+                <option value="inactive">Inactive</option>
+              </FormSelect>
             </div>
-          </div>
-        </div>
+          </FormCard>
 
-        {/* Location */}
-        <div className="card">
-          <div className="card-body">
-            <h2 className="text-lg font-semibold text-gray-900 mb-4">Location</h2>
-            
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div className="md:col-span-2">
-                <label className="input-label">Address *</label>
-                <input
-                  type="text"
-                  className={`input ${errors.address ? 'input-error' : ''}`}
-                  placeholder="Street address"
-                  {...register('address', { required: 'Address is required' })}
-                />
-                {errors.address && <p className="text-danger-600 text-xs mt-1">{errors.address.message}</p>}
-              </div>
-
-              <div>
-                <label className="input-label">City *</label>
-                <input
-                  type="text"
-                  className={`input ${errors.city ? 'input-error' : ''}`}
-                  placeholder="City"
-                  {...register('city', { required: 'City is required' })}
-                />
-                {errors.city && <p className="text-danger-600 text-xs mt-1">{errors.city.message}</p>}
-              </div>
-
-              <div>
-                <label className="input-label">State *</label>
-                <input
-                  type="text"
-                  className={`input ${errors.state ? 'input-error' : ''}`}
-                  placeholder="State"
-                  {...register('state', { required: 'State is required' })}
-                />
-                {errors.state && <p className="text-danger-600 text-xs mt-1">{errors.state.message}</p>}
-              </div>
-
-              <div>
-                <label className="input-label">Zip Code *</label>
-                <input
-                  type="text"
-                  className={`input ${errors.zipCode ? 'input-error' : ''}`}
-                  placeholder="Zip code"
-                  {...register('zipCode', { required: 'Zip code is required' })}
-                />
-                {errors.zipCode && <p className="text-danger-600 text-xs mt-1">{errors.zipCode.message}</p>}
-              </div>
-
-              <div>
-                <label className="input-label">Country</label>
-                <input
-                  type="text"
-                  className="input"
-                  {...register('country')}
-                />
-              </div>
-            </div>
-          </div>
-        </div>
-
-        {/* Contact Information */}
-        <div className="card">
-          <div className="card-body">
-            <h2 className="text-lg font-semibold text-gray-900 mb-4">Contact Information</h2>
-            
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div>
-                <label className="input-label">Phone *</label>
-                <input
+          {/* Contact Information */}
+          <FormCard title="Contact Information" icon={Phone}>
+            <div className="space-y-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <FormInput
+                  label="Phone *"
                   type="tel"
-                  className={`input ${errors.phone ? 'input-error' : ''}`}
                   placeholder="+91 98765 43210"
+                  icon={Phone}
+                  error={errors.phone}
                   {...register('phone', { required: 'Phone is required' })}
                 />
-                {errors.phone && <p className="text-danger-600 text-xs mt-1">{errors.phone.message}</p>}
-              </div>
 
-              <div>
-                <label className="input-label">Email *</label>
-                <input
+                <FormInput
+                  label="Email *"
                   type="email"
-                  className={`input ${errors.email ? 'input-error' : ''}`}
                   placeholder="hospital@example.com"
+                  error={errors.email}
                   {...register('email', { 
                     required: 'Email is required',
                     pattern: {
@@ -305,75 +226,117 @@ const HospitalFormPage = () => {
                     }
                   })}
                 />
-                {errors.email && <p className="text-danger-600 text-xs mt-1">{errors.email.message}</p>}
               </div>
 
-              <div className="md:col-span-2">
-                <label className="input-label">Website (optional)</label>
-                <input
-                  type="text"
-                  className="input"
-                  placeholder="https://hospital.com"
-                  {...register('website')}
-                />
-              </div>
+              <FormInput
+                label="Website (optional)"
+                placeholder="https://hospital.com"
+                {...register('website')}
+              />
             </div>
-          </div>
+          </FormCard>
         </div>
+
+        {/* Location */}
+        <FormCard title="Location Details" icon={LocationOn}>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="md:col-span-2">
+              <FormInput
+                label="Address *"
+                placeholder="Street address"
+                icon={LocationOn}
+                error={errors.address}
+                {...register('address', { required: 'Address is required' })}
+              />
+            </div>
+
+            <FormInput
+              label="City *"
+              placeholder="City"
+              error={errors.city}
+              {...register('city', { required: 'City is required' })}
+            />
+
+            <FormInput
+              label="State *"
+              placeholder="State"
+              error={errors.state}
+              {...register('state', { required: 'State is required' })}
+            />
+
+            <FormInput
+              label="Zip Code *"
+              placeholder="Zip code"
+              error={errors.zipCode}
+              {...register('zipCode', { required: 'Zip code is required' })}
+            />
+
+            <FormInput
+              label="Country"
+              {...register('country')}
+              readOnly
+            />
+          </div>
+        </FormCard>
 
         {/* Services */}
-        <div className="card">
-          <div className="card-body">
-            <h2 className="text-lg font-semibold text-gray-900 mb-4">Services</h2>
-            
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-              {[
-                { name: 'is24x7', label: '24/7 Service' },
-                { name: 'hasEmergency', label: 'Emergency' },
-                { name: 'hasAmbulance', label: 'Ambulance' },
-                { name: 'hasBloodBank', label: 'Blood Bank' },
-              ].map((service) => (
-                <label
-                  key={service.name}
-                  className="flex items-center gap-3 p-3 rounded-lg border border-gray-200 cursor-pointer hover:bg-gray-50 transition-colors"
-                >
+        <FormCard title="Available Services" icon={MedicalServices}>
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
+            {[
+              { name: 'is24x7', label: '24/7 Service' },
+              { name: 'hasEmergency', label: 'Emergency' },
+              { name: 'hasAmbulance', label: 'Ambulance' },
+              { name: 'hasBloodBank', label: 'Blood Bank' },
+            ].map((service) => (
+              <label
+                key={service.name}
+                className="group relative flex items-center gap-3 p-4 rounded-xl border border-gray-200 cursor-pointer hover:border-primary-500 hover:bg-primary-50/30 transition-all duration-200"
+              >
+                <div className="flex items-center h-5">
                   <input
                     type="checkbox"
-                    className="w-4 h-4 text-primary-600 border-gray-300 rounded focus:ring-primary-500"
+                    className="w-5 h-5 text-primary-600 border-gray-300 rounded focus:ring-primary-500 transition-all duration-200"
                     {...register(service.name)}
                   />
-                  <span className="text-sm text-gray-700">{service.label}</span>
-                </label>
-              ))}
-            </div>
+                </div>
+                <span className="text-sm font-medium text-gray-700 group-hover:text-primary-700 transition-colors">
+                  {service.label}
+                </span>
+              </label>
+            ))}
           </div>
-        </div>
+        </FormCard>
 
-        {/* Submit */}
-        <div className="flex justify-end gap-3">
+        {/* Submit Actions */}
+        <div className="flex items-center justify-end gap-4 pt-4 border-t border-gray-100">
           <button
             type="button"
             onClick={() => navigate('/hospitals')}
-            className="btn btn-secondary"
+            className="px-6 py-2.5 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 transition-all duration-200 flex items-center gap-2"
             disabled={loading}
           >
+            <Cancel className="w-4 h-4" />
             Cancel
           </button>
+          
           <button
             type="submit"
-            className="btn btn-primary"
+            className="px-8 py-2.5 text-sm font-medium text-white bg-primary-600 rounded-lg hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 shadow-lg shadow-primary-500/30 transition-all duration-200 flex items-center gap-2 transform active:scale-95"
             disabled={loading}
           >
             {loading ? (
               <>
-                <svg className="animate-spin h-4 w-4" fill="none" viewBox="0 0 24 24">
+                <svg className="animate-spin h-4 w-4 text-white" fill="none" viewBox="0 0 24 24">
                   <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
                   <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                 </svg>
                 <span>Saving...</span>
               </>
             ) : (
-              <span>{isEditing ? 'Update Hospital' : 'Create Hospital'}</span>
+              <>
+                <Save className="w-4 h-4" />
+                <span>{isEditing ? 'Update Hospital' : 'Create Hospital'}</span>
+              </>
             )}
           </button>
         </div>
