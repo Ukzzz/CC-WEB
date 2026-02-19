@@ -36,9 +36,6 @@ exports.getStaff = asyncHandler(async (req, res) => {
   if (department) query.department = new RegExp(department, 'i');
   if (status) {
     query.status = status;
-  } else {
-    // Default: exclude terminated staff
-    query.status = { $ne: 'terminated' };
   }
 
   if (search) {
@@ -257,7 +254,54 @@ exports.updateStaff = asyncHandler(async (req, res) => {
 });
 
 /**
- * @desc    Delete staff member
+ * @desc    Terminate staff member (soft delete - keeps record)
+ * @route   PATCH /api/v1/staff/:id/terminate
+ * @access  Admin
+ */
+exports.terminateStaff = asyncHandler(async (req, res) => {
+  const { id } = req.params;
+
+  const staff = await Staff.findById(id);
+
+  if (!staff) {
+    throw new ApiError(404, 'Staff member not found');
+  }
+
+  // Hospital admin can only terminate their own hospital's staff
+  if (
+    req.admin.role === 'hospital_admin' &&
+    req.admin.hospital?.toString() !== staff.hospital.toString()
+  ) {
+    throw new ApiError(403, 'Not authorized to terminate this staff member');
+  }
+
+  if (staff.status === 'terminated') {
+    throw new ApiError(400, 'Staff member is already terminated');
+  }
+
+  // Soft delete - set status to terminated
+  staff.status = 'terminated';
+  await staff.save();
+
+  // Log action
+  const { createLog } = require('../utils/logger');
+  createLog({
+    action: 'TERMINATE_STAFF',
+    user: req.admin._id,
+    hospital: staff.hospital,
+    details: { 
+      staffId: staff._id, 
+      name: staff.name 
+    }
+  }, req);
+
+  res.status(200).json(
+    new ApiResponse(200, null, 'Staff member terminated successfully')
+  );
+});
+
+/**
+ * @desc    Delete staff member (permanent - removes from database)
  * @route   DELETE /api/v1/staff/:id
  * @access  Admin
  */
@@ -278,9 +322,7 @@ exports.deleteStaff = asyncHandler(async (req, res) => {
     throw new ApiError(403, 'Not authorized to delete this staff member');
   }
 
-  // Soft delete - set status to terminated
-  staff.status = 'terminated';
-  await staff.save();
+  await Staff.findByIdAndDelete(id);
 
   // Log action
   const { createLog } = require('../utils/logger');
@@ -290,12 +332,13 @@ exports.deleteStaff = asyncHandler(async (req, res) => {
     hospital: staff.hospital,
     details: { 
       staffId: staff._id, 
+      employeeId: staff.employeeId,
       name: staff.name 
     }
   }, req);
 
   res.status(200).json(
-    new ApiResponse(200, null, 'Staff member removed successfully')
+    new ApiResponse(200, null, 'Staff member permanently deleted')
   );
 });
 

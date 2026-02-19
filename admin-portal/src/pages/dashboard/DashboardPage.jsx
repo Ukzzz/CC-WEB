@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { dashboardService } from '../../services/dashboard.service';
+import { useAuth } from '../../context/AuthContext';
 import toast from 'react-hot-toast';
 import { useSocket } from '../../context/SocketContext';
 
@@ -139,6 +140,8 @@ const DashboardPage = () => {
   const [resourceSummary, setResourceSummary] = useState([]);
 
   const socket = useSocket();
+  const { user } = useAuth();
+  const isSuperAdmin = user?.role === 'super_admin';
 
   useEffect(() => {
     fetchDashboardData();
@@ -193,7 +196,7 @@ const DashboardPage = () => {
       </div>
 
       {/* ── Stats Grid ── */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+      <div className={`grid grid-cols-1 sm:grid-cols-2 ${isSuperAdmin ? 'lg:grid-cols-2' : 'lg:grid-cols-4'} gap-6`}>
         <StatCard
           title="Total Hospitals"
           value={stats?.hospitals?.total}
@@ -207,39 +210,43 @@ const DashboardPage = () => {
             </svg>
           }
         />
-        <StatCard
-          title="Medical Staff"
-          value={stats?.staff?.doctors + (stats?.staff?.nurses || 0)}
-          subtitle={`${stats?.staff?.doctors || 0} Doctors · ${stats?.staff?.nurses || 0} Nurses`}
-          loading={loading}
-          color="cyan"
-          delay={80}
-          icon={
-            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z" />
-            </svg>
-          }
-        />
-        <StatCard
-          title="Available Beds"
-          value={stats?.beds?.available}
-          subtitle={`${Math.round((stats?.beds?.available / stats?.beds?.total) * 100) || 0}% Availability`}
-          loading={loading}
-          color="green"
-          delay={160}
-          icon={
-            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M4 7v10c0 2.21 3.582 4 8 4s8-1.79 8-4V7M4 7c0 2.21 3.582 4 8 4s8-1.79 8-4M4 7c0-2.21 3.582-4 8-4s8 1.79 8 4" />
-            </svg>
-          }
-        />
+        {!isSuperAdmin && (
+          <StatCard
+            title="Medical Staff"
+            value={stats?.staff?.doctors + (stats?.staff?.nurses || 0)}
+            subtitle={`${stats?.staff?.doctors || 0} Doctors · ${stats?.staff?.nurses || 0} Nurses`}
+            loading={loading}
+            color="cyan"
+            delay={80}
+            icon={
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z" />
+              </svg>
+            }
+          />
+        )}
+        {!isSuperAdmin && (
+          <StatCard
+            title="Available Beds"
+            value={stats?.beds?.available}
+            subtitle={`${Math.round((stats?.beds?.available / stats?.beds?.total) * 100) || 0}% Availability`}
+            loading={loading}
+            color="green"
+            delay={160}
+            icon={
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M4 7v10c0 2.21 3.582 4 8 4s8-1.79 8-4V7M4 7c0 2.21 3.582 4 8 4s8-1.79 8-4M4 7c0-2.21 3.582-4 8-4s8 1.79 8 4" />
+              </svg>
+            }
+          />
+        )}
         <StatCard
           title="Active Users"
           value={stats?.users?.active}
           subtitle="Using the mobile app"
           loading={loading}
           color="orange"
-          delay={240}
+          delay={isSuperAdmin ? 80 : 240}
           icon={
             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
@@ -248,7 +255,8 @@ const DashboardPage = () => {
         />
       </div>
 
-      {/* ── Resource Table ── */}
+      {/* ── Resource Table (hospital admin only) ── */}
+      {!isSuperAdmin && (
       <div className="table-container animate-slide-up" style={{ animationDelay: '300ms' }}>
         <div className="px-7 py-6 border-b border-surface-100/60 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div>
@@ -322,6 +330,7 @@ const DashboardPage = () => {
           )}
         </div>
       </div>
+      )}
     </div>
   );
 };

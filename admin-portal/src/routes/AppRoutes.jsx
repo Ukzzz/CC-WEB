@@ -4,6 +4,7 @@ import MainLayout from '../components/layout/MainLayout';
 
 // Pages
 import LoginPage from '../pages/auth/LoginPage';
+import SplashScreen from '../pages/auth/SplashScreen';
 import DashboardPage from '../pages/dashboard/DashboardPage';
 import HospitalsListPage from '../pages/hospitals/HospitalsListPage';
 import HospitalFormPage from '../pages/hospitals/HospitalFormPage';
@@ -22,6 +23,7 @@ const AppRoutes = () => {
   return (
     <Routes>
       {/* Public Routes */}
+      <Route path="/splash" element={<SplashScreen />} />
       <Route path="/login" element={<LoginPage />} />
 
       {/* Protected Routes */}

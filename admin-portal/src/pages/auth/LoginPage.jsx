@@ -61,73 +61,48 @@ const LoginPage = () => {
   return (
     <div className="min-h-screen flex bg-gray-50">
       {/* Left Side - Premium Medical Branding */}
-      <div className="hidden lg:flex lg:w-1/2 relative overflow-hidden bg-[#0F172A]">
-        {/* Background Gradient */}
-        <div className="absolute inset-0 bg-gradient-to-br from-emerald-900/40 via-[#0F172A] to-[#0F172A] z-0" />
+      <div className="hidden lg:flex lg:w-1/2 relative overflow-hidden" style={{ background: 'linear-gradient(135deg, #22b598 0%, #3b82f6 100%)' }}>
+        {/* Background Gradient Overlay */}
+        <div className="absolute inset-0 bg-black/5 z-0" />
         
         {/* Abstract Medical Shapes */}
-        <div className="absolute top-0 right-0 w-full h-full overflow-hidden opacity-20 pointer-events-none">
-           <svg viewBox="0 0 1000 1000" xmlns="http://www.w3.org/2000/svg" className="absolute w-[150%] h-[150%] -top-[20%] -right-[20%] animate-pulse-slow">
-             <defs>
-               <linearGradient id="grad1" x1="0%" y1="0%" x2="100%" y2="100%">
-                 <stop offset="0%" style={{stopColor: '#10B981', stopOpacity: 0.2}} />
-                 <stop offset="100%" style={{stopColor: '#3B82F6', stopOpacity: 0.2}} />
-               </linearGradient>
-             </defs>
-             <circle cx="500" cy="500" r="400" fill="url(#grad1)" />
-             <path d="M500,100 L900,500 L500,900 L100,500 Z" fill="none" stroke="url(#grad1)" strokeWidth="2" />
-           </svg>
+        {/* Floating Decorative Shapes */}
+        <div className="absolute top-0 right-0 w-full h-full overflow-hidden pointer-events-none">
+          <div className="absolute w-[400px] h-[400px] rounded-full bg-white/[0.08] -top-[120px] -right-[80px]" style={{ animation: 'float 8s ease-in-out infinite' }} />
+          <div className="absolute w-[250px] h-[250px] rounded-full bg-white/[0.08] -bottom-[60px] -left-[40px]" style={{ animation: 'float 10s ease-in-out infinite reverse' }} />
+          <div className="absolute w-[150px] h-[150px] rounded-full bg-white/[0.06] top-[40%] left-[15%]" style={{ animation: 'float 7s ease-in-out infinite 1s' }} />
         </div>
 
-        <div className="relative z-10 flex flex-col justify-center items-center w-full p-16 text-center h-full glass-effect-premium">
+        <div className="relative z-10 flex flex-col justify-center items-center w-full p-16 text-center h-full">
            <motion.div 
              initial={{ opacity: 0, y: 20 }}
              animate={{ opacity: 1, y: 0 }}
              transition={{ duration: 0.8 }}
-             className="mb-8 p-4 bg-white/5 rounded-full backdrop-blur-sm border border-white/10"
+             className="mb-6 w-[80px] h-[80px] rounded-[22px] flex items-center justify-center"
+             style={{ background: 'rgba(255,255,255,0.12)', backdropFilter: 'blur(12px)', border: '1px solid rgba(255,255,255,0.18)', boxShadow: '0 8px 32px rgba(0,0,0,0.12)' }}
            >
-             <LocalHospital className="w-16 h-16 text-emerald-400" />
+             <LocalHospital style={{ fontSize: 40, color: '#ffffff' }} />
            </motion.div>
            
            <motion.h1 
              initial={{ opacity: 0, y: 20 }}
              animate={{ opacity: 1, y: 0 }}
              transition={{ duration: 0.8, delay: 0.2 }}
-             className="text-4xl font-bold text-white mb-6 tracking-tight"
+             className="text-4xl font-extrabold text-white mb-3 tracking-tight"
+             style={{ textShadow: '0 2px 12px rgba(0,0,0,0.1)' }}
            >
              CareConnect
            </motion.h1>
-           
-           <motion.p 
-             initial={{ opacity: 0, y: 20 }}
+
+           <motion.p
+             initial={{ opacity: 0, y: 12 }}
              animate={{ opacity: 1, y: 0 }}
              transition={{ duration: 0.8, delay: 0.4 }}
-             className="text-lg text-gray-300 max-w-md leading-relaxed font-light"
+             className="text-white/80 text-base font-normal"
            >
-             Next-generation hospital administration platform. 
-             Seamlessly manage staff, resources, and patient data with precision and care.
+             Finding care when you need it most
            </motion.p>
-           
-           <motion.div 
-             initial={{ opacity: 0 }}
-             animate={{ opacity: 1 }}
-             transition={{ duration: 1, delay: 0.8 }}
-             className="mt-12 flex gap-8"
-           >
-             <div className="flex flex-col items-center gap-2">
-               <div className="w-10 h-10 rounded-full bg-emerald-500/10 flex items-center justify-center text-emerald-400 border border-emerald-500/20">
-                 <MedicalServices fontSize="small" />
-               </div>
-               <span className="text-xs text-gray-400 font-medium">Clinical</span>
-             </div>
-             <div className="flex flex-col items-center gap-2">
-               <div className="w-10 h-10 rounded-full bg-blue-500/10 flex items-center justify-center text-blue-400 border border-blue-500/20">
-                 <HealthAndSafety fontSize="small" />
-               </div>
-               <span className="text-xs text-gray-400 font-medium">Safety</span>
-             </div>
-           </motion.div>
-        </div>
+         </div>
       </div>
 
       {/* Right Side - Login Form */}

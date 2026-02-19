@@ -10,8 +10,9 @@ const StaffListPage = () => {
   const [staff, setStaff] = useState([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState('');
+  const [terminateModal, setTerminateModal] = useState({ show: false, staff: null });
   const [deleteModal, setDeleteModal] = useState({ show: false, staff: null });
-  const [deleting, setDeleting] = useState(false);
+  const [actionLoading, setActionLoading] = useState(false);
   const [pagination, setPagination] = useState({
     page: 1,
     limit: 10,
@@ -49,20 +50,41 @@ const StaffListPage = () => {
     fetchStaff();
   };
 
+  const handleTerminate = async () => {
+    if (!terminateModal.staff) return;
+    
+    try {
+      setActionLoading(true);
+      await staffService.terminate(terminateModal.staff._id);
+      toast.success('Staff member terminated successfully');
+      setTerminateModal({ show: false, staff: null });
+      fetchStaff();
+    } catch (error) {
+      toast.error(error.response?.data?.message || 'Failed to terminate staff member');
+    } finally {
+      setActionLoading(false);
+    }
+  };
+
   const handleDelete = async () => {
     if (!deleteModal.staff) return;
     
     try {
-      setDeleting(true);
+      setActionLoading(true);
       await staffService.delete(deleteModal.staff._id);
-      toast.success('Staff member terminated successfully');
+      toast.success('Staff member permanently deleted');
       setDeleteModal({ show: false, staff: null });
       fetchStaff();
     } catch (error) {
-      toast.error('Failed to delete staff member');
+      toast.error(error.response?.data?.message || 'Failed to delete staff member');
     } finally {
-      setDeleting(false);
+      setActionLoading(false);
     }
+  };
+
+  const openTerminateModal = (e, member) => {
+    e.stopPropagation();
+    setTerminateModal({ show: true, staff: member });
   };
 
   const openDeleteModal = (e, member) => {
@@ -113,15 +135,23 @@ const StaffListPage = () => {
   };
 
   const getStatusBadge = (status) => {
-    return status === 'active' ? 'badge-success' : 'badge-default';
+    const badges = {
+      active: 'badge-success',
+      inactive: 'badge-default',
+      on_leave: 'badge-warning',
+      terminated: 'badge-danger',
+    };
+    return badges[status] || 'badge-default';
   };
 
   const getStatusIcon = (status) => {
-    return status === 'active' ? (
-      <span className="w-2 h-2 rounded-full bg-success-500 animate-pulse"></span>
-    ) : (
-      <span className="w-2 h-2 rounded-full bg-gray-400"></span>
-    );
+    if (status === 'active') {
+      return <span className="w-2 h-2 rounded-full bg-success-500 animate-pulse"></span>;
+    }
+    if (status === 'terminated') {
+      return <span className="w-2 h-2 rounded-full bg-red-500"></span>;
+    }
+    return <span className="w-2 h-2 rounded-full bg-gray-400"></span>;
   };
 
   const formatRole = (role) => {
@@ -255,15 +285,26 @@ const StaffListPage = () => {
                           </svg>
                         </button>
                         {hasPermission('manage_staff') && (
-                          <button
-                            onClick={(e) => openDeleteModal(e, member)}
-                            className="text-gray-400 hover:text-red-600 p-1.5 hover:bg-red-50 rounded-lg transition-colors"
-                            title="Delete"
-                          >
-                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                            </svg>
-                          </button>
+                          <>
+                            <button
+                              onClick={(e) => openTerminateModal(e, member)}
+                              className="text-gray-400 hover:text-amber-600 p-1.5 hover:bg-amber-50 rounded-lg transition-colors"
+                              title="Terminate"
+                            >
+                              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636" />
+                              </svg>
+                            </button>
+                            <button
+                              onClick={(e) => openDeleteModal(e, member)}
+                              className="text-gray-400 hover:text-red-600 p-1.5 hover:bg-red-50 rounded-lg transition-colors"
+                              title="Delete permanently"
+                            >
+                              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                              </svg>
+                            </button>
+                          </>
                         )}
                       </div>
                     </td>
@@ -314,7 +355,7 @@ const StaffListPage = () => {
       </div>
 
       {/* Terminate Confirmation Modal */}
-      {deleteModal.show && (
+      {terminateModal.show && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
           <div className="bg-white rounded-2xl shadow-2xl max-w-md w-full p-6 animate-scale-in">
             <div className="flex items-center gap-4 mb-4">
@@ -329,23 +370,62 @@ const StaffListPage = () => {
               </div>
             </div>
             <p className="text-gray-600 mb-6">
-              Are you sure you want to terminate <strong>{deleteModal.staff?.name?.firstName} {deleteModal.staff?.name?.lastName}</strong>? 
-              Their status will be changed to "Terminated" and they will no longer appear in active staff lists.
+              Are you sure you want to terminate <strong>{terminateModal.staff?.name?.firstName} {terminateModal.staff?.name?.lastName}</strong>? 
+              Their status will be changed to "Terminated" and they will no longer appear in active staff lists. The record will be kept in the database.
+            </p>
+            <div className="flex justify-end gap-3">
+              <button
+                onClick={() => setTerminateModal({ show: false, staff: null })}
+                className="btn btn-secondary"
+                disabled={actionLoading}
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleTerminate}
+                className="btn bg-amber-600 hover:bg-amber-700 text-white"
+                disabled={actionLoading}
+              >
+                {actionLoading ? 'Terminating...' : 'Terminate'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Delete Confirmation Modal */}
+      {deleteModal.show && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
+          <div className="bg-white rounded-2xl shadow-2xl max-w-md w-full p-6 animate-scale-in">
+            <div className="flex items-center gap-4 mb-4">
+              <div className="w-12 h-12 rounded-full bg-red-100 flex items-center justify-center">
+                <svg className="w-6 h-6 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                </svg>
+              </div>
+              <div>
+                <h3 className="text-lg font-bold text-gray-900">Permanently Delete Staff</h3>
+                <p className="text-sm text-red-500">This action cannot be undone</p>
+              </div>
+            </div>
+            <p className="text-gray-600 mb-6">
+              Are you sure you want to permanently delete <strong>{deleteModal.staff?.name?.firstName} {deleteModal.staff?.name?.lastName}</strong> ({deleteModal.staff?.employeeId})? 
+              This will completely remove their record from the database and cannot be reversed.
             </p>
             <div className="flex justify-end gap-3">
               <button
                 onClick={() => setDeleteModal({ show: false, staff: null })}
                 className="btn btn-secondary"
-                disabled={deleting}
+                disabled={actionLoading}
               >
                 Cancel
               </button>
               <button
                 onClick={handleDelete}
-                className="btn bg-amber-600 hover:bg-amber-700 text-white"
-                disabled={deleting}
+                className="btn bg-red-600 hover:bg-red-700 text-white"
+                disabled={actionLoading}
               >
-                {deleting ? 'Terminating...' : 'Terminate'}
+                {actionLoading ? 'Deleting...' : 'Delete Permanently'}
               </button>
             </div>
           </div>

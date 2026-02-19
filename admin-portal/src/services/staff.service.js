@@ -42,7 +42,15 @@ export const staffService = {
   },
 
   /**
-   * Delete staff member (soft delete)
+   * Terminate staff member (soft delete - keeps record)
+   */
+  terminate: async (id) => {
+    const response = await api.patch(`/staff/${id}/terminate`);
+    return response.data;
+  },
+
+  /**
+   * Delete staff member (permanent - removes from database)
    */
   delete: async (id) => {
     const response = await api.delete(`/staff/${id}`);

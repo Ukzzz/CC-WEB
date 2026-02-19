@@ -37,7 +37,7 @@ const createStaffSchema = Joi.object({
     .when('role', {
       is: 'doctor',
       then: Joi.required(),
-      otherwise: Joi.optional()
+      otherwise: Joi.optional().allow('')
     })
     .messages({
       'any.required': 'Specialization is required for doctors'
@@ -119,7 +119,7 @@ const updateStaffSchema = Joi.object({
   role: Joi.string()
     .valid('doctor', 'nurse', 'technician', 'receptionist', 'admin_staff')
     .optional(),
-  specialization: Joi.string().optional(),
+  specialization: Joi.string().optional().allow(''),
   qualifications: Joi.array()
     .items(
       Joi.object({

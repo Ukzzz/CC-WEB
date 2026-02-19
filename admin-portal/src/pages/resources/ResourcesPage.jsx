@@ -10,7 +10,7 @@ const ResourcesPage = () => {
   const [resources, setResources] = useState([]);
   const [loading, setLoading] = useState(true);
   const [expandedHospitals, setExpandedHospitals] = useState({});
-  const [viewMode, setViewMode] = useState('grouped'); // 'grouped' or 'flat'
+
 
   useEffect(() => {
     fetchResources();
@@ -77,41 +77,47 @@ const ResourcesPage = () => {
 
   const getResourceConfig = (type) => {
     const configs = {
-      beds: { 
+      bed: { 
         gradient: 'from-blue-500 to-indigo-500', 
         bg: 'bg-blue-50', 
         icon: '🛏️',
         label: 'General Beds'
       },
-      icu_beds: { 
+      icu_bed: { 
         gradient: 'from-red-500 to-pink-500', 
         bg: 'bg-red-50', 
         icon: '🏥',
         label: 'ICU Beds'
       },
-      ventilators: { 
+      ventilator: { 
         gradient: 'from-purple-500 to-violet-500', 
         bg: 'bg-purple-50', 
         icon: '🫁',
         label: 'Ventilators'
       },
-      oxygen: { 
+      emergency_ward: { 
+        gradient: 'from-amber-500 to-orange-500', 
+        bg: 'bg-amber-50', 
+        icon: '🚑',
+        label: 'Emergency Ward'
+      },
+      ambulance: { 
+        gradient: 'from-rose-500 to-red-500', 
+        bg: 'bg-rose-50', 
+        icon: '🚒',
+        label: 'Ambulance'
+      },
+      oxygen_cylinder: { 
         gradient: 'from-cyan-500 to-teal-500', 
         bg: 'bg-cyan-50', 
         icon: '💨',
-        label: 'Oxygen Supply'
-      },
-      blood_units: { 
-        gradient: 'from-rose-500 to-red-500', 
-        bg: 'bg-rose-50', 
-        icon: '🩸',
-        label: 'Blood Units'
+        label: 'Oxygen Cylinder'
       },
     };
     return configs[type] || { 
       gradient: 'from-gray-500 to-slate-500', 
       bg: 'bg-gray-50', 
-      icon: '📦',
+      icon: '🩺',
       label: type?.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase()) || 'Resource'
     };
   };
@@ -150,46 +156,14 @@ const ResourcesPage = () => {
           <p className="page-subtitle">Monitor and manage hospital resources in real-time</p>
         </div>
         <div className="flex flex-wrap items-center gap-3">
-          {/* View Toggle */}
-          <div className="flex bg-white rounded-xl border border-gray-200 p-1 shadow-sm">
-            <button
-              onClick={() => setViewMode('grouped')}
-              className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-all flex items-center gap-1.5 ${
-                viewMode === 'grouped' 
-                  ? 'bg-gradient-to-r from-emerald-500 to-teal-500 text-white shadow-md' 
-                  : 'text-gray-500 hover:text-gray-700'
-              }`}
-            >
-              <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
-                <path d="M2 4.75A.75.75 0 012.75 4h14.5a.75.75 0 010 1.5H2.75A.75.75 0 012 4.75zm0 10.5a.75.75 0 01.75-.75h7.5a.75.75 0 010 1.5h-7.5a.75.75 0 01-.75-.75zM2 10a.75.75 0 01.75-.75h14.5a.75.75 0 010 1.5H2.75A.75.75 0 012 10z" />
-              </svg>
-              Grouped
+          <div className="flex gap-1 bg-white rounded-xl border border-gray-200 p-1 shadow-sm">
+            <button onClick={expandAll} className="px-3 py-1.5 text-sm text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-lg transition-colors">
+              Expand
             </button>
-            <button
-              onClick={() => setViewMode('flat')}
-              className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-all flex items-center gap-1.5 ${
-                viewMode === 'flat' 
-                  ? 'bg-gradient-to-r from-emerald-500 to-teal-500 text-white shadow-md' 
-                  : 'text-gray-500 hover:text-gray-700'
-              }`}
-            >
-              <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
-                <path d="M5 3a2 2 0 00-2 2v2a2 2 0 002 2h2a2 2 0 002-2V5a2 2 0 00-2-2H5zM5 11a2 2 0 00-2 2v2a2 2 0 002 2h2a2 2 0 002-2v-2a2 2 0 00-2-2H5zM11 5a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V5zM11 13a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z" />
-              </svg>
-              Grid
+            <button onClick={collapseAll} className="px-3 py-1.5 text-sm text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-lg transition-colors">
+              Collapse
             </button>
           </div>
-
-          {viewMode === 'grouped' && (
-            <div className="flex gap-1 bg-white rounded-xl border border-gray-200 p-1 shadow-sm">
-              <button onClick={expandAll} className="px-3 py-1.5 text-sm text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-lg transition-colors">
-                Expand
-              </button>
-              <button onClick={collapseAll} className="px-3 py-1.5 text-sm text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-lg transition-colors">
-                Collapse
-              </button>
-            </div>
-          )}
 
           <div className="flex items-center gap-3 ml-auto sm:ml-0">
              <button onClick={fetchResources} className="btn btn-secondary whitespace-nowrap" disabled={loading}>
@@ -227,7 +201,7 @@ const ResourcesPage = () => {
         <div className="bg-white rounded-2xl p-5 shadow-lg border border-gray-100">
           <div className="flex items-center gap-3">
             <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-emerald-500 to-teal-500 flex items-center justify-center text-white text-xl shadow-lg shadow-emerald-500/20">
-              📦
+              🩺
             </div>
             <div>
               <p className="text-2xl font-bold text-gray-900">{resources.length}</p>
@@ -238,7 +212,7 @@ const ResourcesPage = () => {
         <div className="bg-white rounded-2xl p-5 shadow-lg border border-gray-100">
           <div className="flex items-center gap-3">
             <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-green-500 to-emerald-500 flex items-center justify-center text-white text-xl shadow-lg shadow-green-500/20">
-              ✅
+              💊
             </div>
             <div>
               <p className="text-2xl font-bold text-gray-900">
@@ -251,7 +225,7 @@ const ResourcesPage = () => {
         <div className="bg-white rounded-2xl p-5 shadow-lg border border-gray-100">
           <div className="flex items-center gap-3">
             <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-red-500 to-rose-500 flex items-center justify-center text-white text-xl shadow-lg shadow-red-500/20">
-              ⚠️
+              🚨
             </div>
             <div>
               <p className="text-2xl font-bold text-gray-900">
@@ -284,8 +258,6 @@ const ResourcesPage = () => {
           ))}
         </div>
       ) : resources.length > 0 ? (
-        viewMode === 'grouped' ? (
-          // Grouped View
           <div className="space-y-4">
             {groupedResources.map((group) => {
               const stats = getHospitalStats(group.resources);
@@ -404,84 +376,12 @@ const ResourcesPage = () => {
               );
             })}
           </div>
-        ) : (
-          // Flat Grid View
-          <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
-            {resources.map((resource) => {
-              const config = getResourceConfig(resource.resourceType);
-              const percentage = getPercentage(resource.available, resource.total);
-              const status = getStatusColor(percentage);
-              
-              return (
-                <div
-                  key={resource._id}
-                  onClick={() => navigate(`/resources/${resource._id}/edit`)}
-                  className="group bg-white rounded-2xl p-5 shadow-lg border border-gray-100 cursor-pointer transition-all duration-300 hover:shadow-xl hover:-translate-y-1"
-                >
-                  {/* Header */}
-                  <div className="flex items-center justify-between mb-4">
-                    <div className="flex items-center gap-3">
-                      <div className={`w-12 h-12 rounded-xl bg-gradient-to-br ${config.gradient} flex items-center justify-center text-xl shadow-lg`}>
-                        {config.icon}
-                      </div>
-                      <div>
-                        <h4 className="font-bold text-gray-900 group-hover:text-emerald-600 transition-colors">
-                          {config.label}
-                        </h4>
-                        <p className="text-xs text-gray-500">{resource.hospital?.name}</p>
-                      </div>
-                    </div>
-                    {canEdit(resource) && (
-                      <button
-                        onClick={(e) => { e.stopPropagation(); navigate(`/resources/${resource._id}/edit`); }}
-                        className="text-gray-400 hover:text-emerald-600 p-1.5 hover:bg-gray-100 rounded-lg transition-colors"
-                      >
-                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
-                        </svg>
-                      </button>
-                    )}
-                  </div>
 
-                  {/* Progress */}
-                  <div className="mb-4">
-                    <div className="flex justify-between text-sm mb-1.5">
-                      <span className="text-gray-500">Availability</span>
-                      <span className={`font-bold ${status.text}`}>{percentage}%</span>
-                    </div>
-                    <div className="h-2.5 bg-gray-100 rounded-full overflow-hidden">
-                      <div 
-                        className={`h-full rounded-full bg-gradient-to-r ${status.bar} transition-all duration-500`}
-                        style={{ width: `${percentage}%` }}
-                      />
-                    </div>
-                  </div>
-
-                  {/* Stats */}
-                  <div className="grid grid-cols-3 gap-2">
-                    <div className="text-center py-2.5 bg-emerald-50 rounded-xl">
-                      <p className="text-xl font-bold text-emerald-700">{resource.available}</p>
-                      <p className="text-xs text-emerald-600">Available</p>
-                    </div>
-                    <div className="text-center py-2.5 bg-amber-50 rounded-xl">
-                      <p className="text-xl font-bold text-amber-700">{resource.occupied}</p>
-                      <p className="text-xs text-amber-600">Occupied</p>
-                    </div>
-                    <div className="text-center py-2.5 bg-gray-100 rounded-xl">
-                      <p className="text-xl font-bold text-gray-700">{resource.total}</p>
-                      <p className="text-xs text-gray-500">Total</p>
-                    </div>
-                  </div>
-                </div>
-              );
-            })}
-          </div>
-        )
       ) : (
         <div className="bg-white rounded-2xl shadow-lg p-12">
           <div className="text-center">
             <div className="w-20 h-20 mx-auto rounded-2xl bg-gradient-to-br from-gray-100 to-gray-50 flex items-center justify-center text-4xl mb-5">
-              📦
+              🏥
             </div>
             <h3 className="text-lg font-semibold text-gray-900 mb-2">No resources found</h3>
             <p className="text-gray-500 mb-6">Get started by adding your first resource</p>

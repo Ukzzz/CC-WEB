@@ -73,7 +73,7 @@ const SystemLogsPage = () => {
                       <span className="badge badge-info">{log.action}</span>
                     </td>
                     <td>
-                      <div className="font-medium text-gray-900">{log.user?.name}</div>
+                      <div className="font-medium text-gray-900">{log.user?.name?.firstName} {log.user?.name?.lastName}</div>
                       <div className="text-xs text-gray-500">{log.user?.email}</div>
                     </td>
                     <td className="capitalize text-sm text-gray-600">

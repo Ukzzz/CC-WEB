@@ -252,17 +252,26 @@ const AdminFormPage = () => {
                     )}
                   </div>
 
-                  <FormInput
-                    label="Password *"
-                    type="password"
-                    placeholder="••••••••"
-                    icon={Lock}
-                    error={errors.password}
-                    {...register('password', { 
-                      required: 'Password is required',
-                      minLength: { value: 8, message: 'Password must be at least 8 characters' } 
-                    })}
-                  />
+                  <div>
+                    <FormInput
+                      label="Password *"
+                      type="password"
+                      placeholder="••••••••"
+                      icon={Lock}
+                      error={errors.password}
+                      {...register('password', { 
+                        required: 'Password is required',
+                        minLength: { value: 8, message: 'Password must be at least 8 characters' },
+                        pattern: {
+                          value: /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).+$/,
+                          message: 'Password must contain at least one uppercase letter, one lowercase letter, and one number'
+                        }
+                      })}
+                    />
+                    <p className="mt-1 text-xs text-gray-500">
+                      Must be at least 8 characters with an uppercase letter, a lowercase letter, and a number.
+                    </p>
+                  </div>
                 </div>
               </div>
             </FormCard>

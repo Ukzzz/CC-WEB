@@ -1,5 +1,8 @@
 import api from './api';
 
 export const logService = {
-  getLogs: (params) => api.get('/logs', { params }),
+  getLogs: async (params) => {
+    const response = await api.get('/logs', { params });
+    return response.data;
+  },
 };

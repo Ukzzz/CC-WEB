@@ -6,6 +6,7 @@ const {
   getStaffMember,
   createStaff,
   updateStaff,
+  terminateStaff,
   deleteStaff,
   getStaffByHospital
 } = require('../controllers/staff.controller');
@@ -45,7 +46,10 @@ router.put(
   updateStaff
 );
 
-// DELETE staff (soft delete)
+// PATCH terminate staff (soft delete - keeps record)
+router.patch('/:id/terminate', hasPermission('manage_staff'), terminateStaff);
+
+// DELETE staff (permanent - removes from database)
 router.delete('/:id', hasPermission('manage_staff'), deleteStaff);
 
 module.exports = router;

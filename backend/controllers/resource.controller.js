@@ -191,10 +191,12 @@ exports.updateResource = asyncHandler(async (req, res) => {
   req.body.updatedBy = req.admin._id;
   req.body.lastUpdated = new Date();
 
-  const resource = await Resource.findByIdAndUpdate(id, req.body, {
-    new: true,
-    runValidators: true
-  })
+  // Use save() instead of findByIdAndUpdate so that the document-level
+  // validator on `available` (which references `this.total`) works correctly.
+  Object.assign(existingResource, req.body);
+  await existingResource.save();
+
+  const resource = await Resource.findById(id)
     .populate('updatedBy', 'name.firstName name.lastName');
 
   // Emit socket event
