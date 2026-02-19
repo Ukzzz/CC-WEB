@@ -20,7 +20,7 @@ const PrivateRoute = ({ children, requiredPermission, requiredRole }) => {
   }
 
   if (!isAuthenticated) {
-    return <Navigate to="/login" state={{ from: location }} replace />;
+    return <Navigate to="/splash" state={{ from: location }} replace />;
   }
 
   // Check role requirement
